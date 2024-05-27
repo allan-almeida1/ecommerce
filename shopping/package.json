@@ -1,0 +1,25 @@
+{
+  "name": "shopping",
+  "version": "1.0.0",
+  "description": "This microservice is responsible for shopping actions",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/server/server.js",
+    "dev": "nodemon src/server/server.ts"
+  },
+  "author": "Allan Almeida",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.12",
+    "nodemon": "^3.1.1",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5"
+  }
+}
