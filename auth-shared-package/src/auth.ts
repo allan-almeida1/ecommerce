@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { IRequestWithUser } from "../../interfaces/IRequestWithUser.js";
+
+interface IRequestWithUser extends Request {
+  user: JwtPayload;
+}
 
 class Authorization {
   public static verifyToken(req: Request, res: Response, next: NextFunction) {
@@ -21,4 +24,4 @@ class Authorization {
   }
 }
 
-export default Authorization;
+export { IRequestWithUser, Authorization };

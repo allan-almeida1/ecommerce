@@ -37,7 +37,10 @@ class CartRepositoryJson implements ICartRepository {
         return existing;
       }
     });
-    await fs.promises.writeFile(this.filename, JSON.stringify(updated_carts));
+    await fs.promises.writeFile(
+      this.filename,
+      JSON.stringify(updated_carts, null, 2)
+    );
   }
 
   public async getCartByUserId(

@@ -5,10 +5,9 @@ import { CartItem } from "../../models/CartItem.js";
 import CarItemAlreadyExistsError from "../../models/errors/CartItemAlreadyExistsError.js";
 import ValidateMiddleware from "../middlewares/ValidateMiddleware.js";
 import CartItemNotFoundError from "../../models/errors/CartItemNotFoundError.js";
-import Authorization from "../auth/Authorization.js";
-import { IRequestWithUser } from "../../interfaces/IRequestWithUser.js";
 import Cart from "../../models/Cart.js";
 import CartNotFoundError from "../../models/errors/CartNotFoundError.js";
+import { Authorization, IRequestWithUser } from "auth-package";
 
 /**
  * Class to control cart operations
