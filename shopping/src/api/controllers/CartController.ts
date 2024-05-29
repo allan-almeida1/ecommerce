@@ -21,6 +21,11 @@ class CartController {
     this.router = Router();
 
     this.router.get("", Authorization.verifyToken, this.getCart.bind(this));
+    this.router.delete(
+      "",
+      Authorization.verifyToken,
+      this.deleteCart.bind(this)
+    );
 
     this.router.get(
       "/items/:product_id",
@@ -128,6 +133,11 @@ class CartController {
     }
   }
 
+  /**
+   * Update an item from user's cart if it exists
+   * @param req HTTP Request with product_id as parameter and amount in body
+   * @param res HTTP Response
+   */
   private async updateItem(req: Request, res: Response) {
     const { product_id } = req.params;
     const { amount } = req.body;
@@ -141,6 +151,20 @@ class CartController {
     } else if (result instanceof Cart) {
       res.json(result);
     }
+  }
+
+  /**
+   * Delete a user's cart
+   * @param req HTTP Request
+   * @param res HTTP Response
+   */
+  private async deleteCart(req: Request, res: Response) {
+    const user = (req as IRequestWithUser).user;
+    const result = await this.cart_service.deleteCart(user.sub!);
+    if (!result) {
+      res.status(204).send();
+    } else if (result instanceof CartNotFoundError)
+      [res.status(404).json(result.http_json)];
   }
 }
 

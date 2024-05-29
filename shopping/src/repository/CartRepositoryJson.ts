@@ -45,6 +45,15 @@ class CartRepositoryJson implements ICartRepository {
     );
   }
 
+  private async removeCart(user_id: string): Promise<void> {
+    const carts = await this.getAllCarts();
+    const updated_carts = carts.filter((_cart) => _cart.user_id !== user_id);
+    await fs.promises.writeFile(
+      this.filename,
+      JSON.stringify(updated_carts, null, 2)
+    );
+  }
+
   // ========================= Public Override Methods ===============================
 
   public async getCartByUserId(
@@ -152,6 +161,15 @@ class CartRepositoryJson implements ICartRepository {
     });
     await this.updateCart(cart);
     return cart;
+  }
+
+  public async deleteCart(user_id: string): Promise<CartNotFoundError | null> {
+    const cart = await this.getCartByUserId(user_id);
+    if (cart instanceof CartNotFoundError) {
+      return new CartNotFoundError(user_id);
+    }
+    await this.removeCart(user_id);
+    return null;
   }
 }
 

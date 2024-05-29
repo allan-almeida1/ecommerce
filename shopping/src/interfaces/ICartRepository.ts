@@ -63,6 +63,12 @@ interface ICartRepository {
     item: CartItem
   ): Promise<Cart | CartItemNotFoundError>;
 
+  /**
+   * Delete user's cart if they have one
+   * @param user_id User ID
+   */
+  deleteCart(user_id: string): Promise<null | CartNotFoundError>;
+
   //   update(item: CartItem): Promise<CartItem>;
   //   remove(product_id: string): Promise<CartItem>;
   //   getAll(): Promise<CartItem[]>;

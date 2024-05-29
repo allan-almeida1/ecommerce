@@ -72,6 +72,15 @@ class CartService {
   ): Promise<Cart | CartItemNotFoundError> {
     return await this.cart_repository.updateCartItem(user_id, cart_item);
   }
+
+  /**
+   * Delete a user's cart
+   * @param user_id User ID
+   * @returns Promise to null if successfull or CartNotFoundError
+   */
+  public async deleteCart(user_id: string): Promise<CartNotFoundError | null> {
+    return await this.cart_repository.deleteCart(user_id);
+  }
 }
 
 export default CartService;
