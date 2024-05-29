@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsx index.ts",
+    "build": "npx tsc",
     "start": "node dist/index.js",
     "dev": "nodemon"
   },
