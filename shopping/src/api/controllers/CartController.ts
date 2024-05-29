@@ -28,6 +28,19 @@ class CartController {
       this.getItem.bind(this)
     );
 
+    this.router.delete(
+      "/items/:product_id",
+      Authorization.verifyToken,
+      this.removeFromCart.bind(this)
+    );
+
+    this.router.put(
+      "/items/:product_id",
+      Authorization.verifyToken,
+      ValidateMiddleware.validateCartItemAmount,
+      this.updateItem.bind(this)
+    );
+
     this.router.post(
       "/items",
       Authorization.verifyToken,
@@ -39,7 +52,7 @@ class CartController {
   }
 
   /**
-   * Get a Cart
+   * Get a user's cart if exists
    * @param req HTTP Request
    * @param res HTTP Response
    */
@@ -56,14 +69,14 @@ class CartController {
   }
 
   /**
-   * Get an item from Cart
+   * Get an item from user's cart if it exists
    * @param req HTTP Request with product_id as parameter
    * @param res HTTP Response
    */
   private async getItem(req: Request, res: Response) {
     const { product_id } = req.params;
     const user = (req as IRequestWithUser).user;
-    const item = await this.cart_service.getCartItem(user.id, product_id);
+    const item = await this.cart_service.getCartItem(user.sub!, product_id);
     if (item instanceof CartItem) {
       res.json(item);
     } else if (item instanceof CartItemNotFoundError) {
@@ -74,7 +87,8 @@ class CartController {
   }
 
   /**
-   * Add an item to Cart
+   * Add an item to user's cart. If user doesn't have a cart, create one
+   * and add the item
    * @param req HTTP Request with CartItem on body
    * @param res HTTP Response
    */
@@ -86,12 +100,46 @@ class CartController {
       user.sub!,
       cart_item
     );
-    if (added_item instanceof CartItem) {
+    if (added_item instanceof Cart) {
       res.json(added_item);
     } else if (added_item instanceof CarItemAlreadyExistsError) {
       res.status(409).json(added_item.http_json);
     } else {
       res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
+  /**
+   * Remove an item from user's cart if it exists
+   * @param req HTTP Request with product_id as parameter
+   * @param res HTTP Response
+   */
+  private async removeFromCart(req: Request, res: Response) {
+    const { product_id } = req.params;
+    const user = (req as IRequestWithUser).user;
+    const result = await this.cart_service.removeItemFromCart(
+      user.sub!,
+      product_id
+    );
+    if (!result) {
+      res.status(204).send();
+    } else if (result instanceof CartItemNotFoundError) {
+      res.status(404).json(result.http_json);
+    }
+  }
+
+  private async updateItem(req: Request, res: Response) {
+    const { product_id } = req.params;
+    const { amount } = req.body;
+    const user = (req as IRequestWithUser).user;
+    const result = await this.cart_service.updateItemFromCart(
+      user.sub!,
+      new CartItem(product_id, amount)
+    );
+    if (result instanceof CartItemNotFoundError) {
+      res.status(404).json(result.http_json);
+    } else if (result instanceof Cart) {
+      res.json(result);
     }
   }
 }

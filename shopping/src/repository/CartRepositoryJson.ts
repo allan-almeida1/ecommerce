@@ -18,6 +18,8 @@ class CartRepositoryJson implements ICartRepository {
     this.filename = process.env.MOCK_DATA_FILENAME || "cart.json";
   }
 
+  // ========================== Private Internal Methods ==========================
+
   private async getAllCarts(): Promise<Cart[]> {
     if (fs.existsSync(this.filename)) {
       const filecontent = await fs.promises.readFile(this.filename, "utf8");
@@ -42,6 +44,8 @@ class CartRepositoryJson implements ICartRepository {
       JSON.stringify(updated_carts, null, 2)
     );
   }
+
+  // ========================= Public Override Methods ===============================
 
   public async getCartByUserId(
     user_id: string
@@ -87,7 +91,7 @@ class CartRepositoryJson implements ICartRepository {
   public async addCartItem(
     user_id: string,
     item: CartItem
-  ): Promise<CartItem | CartItemAlreadyExistsError> {
+  ): Promise<Cart | CartItemAlreadyExistsError> {
     const cart = await this.getCartByUserId(user_id);
     if (cart instanceof Cart) {
       const match = cart.items.find(
@@ -96,7 +100,7 @@ class CartRepositoryJson implements ICartRepository {
       if (!match) {
         cart.addItem(item);
         await this.updateCart(cart);
-        return item;
+        return cart;
       }
       return new CartItemAlreadyExistsError(item.product_id);
     } else if (cart instanceof CartNotFoundError) {
@@ -104,13 +108,51 @@ class CartRepositoryJson implements ICartRepository {
       const items: CartItem[] = [item];
       const new_cart = new Cart(uid, user_id, items);
       await this.createCart(new_cart);
-      return item;
-    } else {
-      return new CartItemAlreadyExistsError(item.product_id);
+      return new_cart;
     }
+    return new CartItemAlreadyExistsError(item.product_id);
   }
 
-  //   public async add(item: CartItem): Promise<CartItem> {}
+  public async removeCartItem(
+    user_id: string,
+    product_id: string
+  ): Promise<CartItemNotFoundError | null> {
+    const cart = await this.getCartByUserId(user_id);
+    if (cart instanceof CartNotFoundError) {
+      return new CartItemNotFoundError(product_id);
+    }
+    const item = await this.getCartItem(user_id, product_id);
+    if (item instanceof CartItemNotFoundError) {
+      return new CartItemNotFoundError(product_id);
+    }
+    cart.items = cart.items.filter(
+      (_item) => _item.product_id !== item.product_id
+    );
+    await this.updateCart(cart);
+    return null;
+  }
+
+  public async updateCartItem(
+    user_id: string,
+    item: CartItem
+  ): Promise<Cart | CartItemNotFoundError> {
+    const cart = await this.getCartByUserId(user_id);
+    if (cart instanceof CartNotFoundError) {
+      return new CartItemNotFoundError(item.product_id);
+    }
+    const found_item = await this.getCartItem(user_id, item.product_id);
+    if (found_item instanceof CartItemNotFoundError) {
+      return new CartItemNotFoundError(item.product_id);
+    }
+    cart.items = cart.items.map((_item) => {
+      if (_item.product_id === item.product_id) {
+        return item;
+      }
+      return _item;
+    });
+    await this.updateCart(cart);
+    return cart;
+  }
 }
 
 export default CartRepositoryJson;

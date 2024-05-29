@@ -5,4 +5,8 @@ const cart_item_schema = Joi.object({
   amount: Joi.number().integer().min(1).required(),
 });
 
-export { cart_item_schema };
+const cart_item_amount_schema = Joi.object({
+  amount: Joi.number().integer().min(1).required(),
+});
+
+export { cart_item_schema, cart_item_amount_schema };

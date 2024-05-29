@@ -13,7 +13,7 @@ class CartService {
   }
 
   /**
-   * Get a cart
+   * Get a user's cart
    * @param user_id User ID
    * @returns A promise to the Cart object or a CarNotFoundError
    */
@@ -22,7 +22,7 @@ class CartService {
   }
 
   /**
-   * Get an item from cart
+   * Get an item from user's cart
    * @param user_id User ID
    * @param product_id Product ID
    * @returns A promise to the CartItem object or a CarItemNotFoundError
@@ -35,16 +35,42 @@ class CartService {
   }
 
   /**
-   * Add an item to cart
+   * Add an item to user's cart
    * @param user_id User ID
    * @param cart_item CartItem object
-   * @return A promise to the CartItem object or a CarItemAlreadyExistsError
+   * @return A promise to the Cart object or a CarItemAlreadyExistsError
    */
   public async addItemToCart(
     user_id: string,
     cart_item: CartItem
-  ): Promise<CartItem | CarItemAlreadyExistsError> {
+  ): Promise<Cart | CarItemAlreadyExistsError> {
     return await this.cart_repository.addCartItem(user_id, cart_item);
+  }
+
+  /**
+   * Remove an item from user's cart
+   * @param user_id User ID
+   * @param product_id Product ID
+   * @returns Promise to null if successfull or CartItemNotFoundError
+   */
+  public async removeItemFromCart(
+    user_id: string,
+    product_id: string
+  ): Promise<CartItemNotFoundError | null> {
+    return await this.cart_repository.removeCartItem(user_id, product_id);
+  }
+
+  /**
+   * Update an item from user's cart
+   * @param user_id User ID
+   * @param cart_item CartItem object
+   * @returns Promise to Cart or CartItemNotFoundError
+   */
+  public async updateItemFromCart(
+    user_id: string,
+    cart_item: CartItem
+  ): Promise<Cart | CartItemNotFoundError> {
+    return await this.cart_repository.updateCartItem(user_id, cart_item);
   }
 }
 
