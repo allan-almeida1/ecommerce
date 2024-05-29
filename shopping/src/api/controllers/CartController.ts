@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-import CartService from "../../service/CartService.js";
 import CartRepositoryJson from "../../repository/CartRepositoryJson.js";
 import { CartItem } from "../../models/CartItem.js";
 import CarItemAlreadyExistsError from "../../models/errors/CartItemAlreadyExistsError.js";
@@ -8,6 +7,7 @@ import CartItemNotFoundError from "../../models/errors/CartItemNotFoundError.js"
 import Cart from "../../models/Cart.js";
 import CartNotFoundError from "../../models/errors/CartNotFoundError.js";
 import { Authorization, IRequestWithUser } from "auth-package";
+import ICartService from "../../interfaces/ICartService.js";
 
 /**
  * Class to control cart operations
@@ -15,10 +15,9 @@ import { Authorization, IRequestWithUser } from "auth-package";
 class CartController {
   public router: Router;
 
-  private cart_service: CartService;
-
-  constructor() {
+  constructor(private cart_service: ICartService) {
     this.router = Router();
+    this.cart_service = cart_service;
 
     this.router.get("", Authorization.verifyToken, this.getCart.bind(this));
     this.router.delete(
@@ -52,8 +51,6 @@ class CartController {
       ValidateMiddleware.validateCartItem,
       this.addToCart.bind(this)
     );
-
-    this.cart_service = new CartService(new CartRepositoryJson());
   }
 
   /**
