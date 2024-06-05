@@ -1,0 +1,23 @@
+{
+  "name": "auth-package",
+  "version": "1.0.0",
+  "description": "This package is shared by all microservices and is responsible for performing authorization and user permissions",
+  "main": "dist/auth.js",
+  "type": "module",
+  "types": "dist/auth.d.ts",
+  "scripts": {
+    "build": "tsc --declaration"
+  },
+  "author": "Allan Almeida",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.12.12",
+    "typescript": "^5.4.5"
+  }
+}
