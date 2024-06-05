@@ -1,0 +1,22 @@
+services:
+  shopping:
+    build:
+      context: .
+      dockerfile: ./shopping/Dockerfile
+    ports:
+      - "3001:3001"
+    networks:
+      - internal_network
+
+  authentication:
+    build:
+      context: .
+      dockerfile: ./authentication/Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
+    driver: bridge
