@@ -2,12 +2,12 @@ import express, { Express } from "express";
 import helmet from "helmet";
 import CartController from "../controllers/CartController.js";
 import DefaultController from "../controllers/DefaultController.js";
-import CartRepositoryJson from "../../repository/CartRepositoryJson.js";
 import CartService from "../../service/CartService.js";
+import CartRepositoryDynamoDB from "../../repository/CartRepositoryDynamo.js";
 
 class Server {
   private app: Express;
-  private cart_repository: CartRepositoryJson;
+  private cart_repository: CartRepositoryDynamoDB;
   private cart_service: CartService;
   private cart_controller: CartController;
   private port: string;
@@ -18,7 +18,7 @@ class Server {
     this.app.use(helmet());
     this.app.use(express.json());
 
-    this.cart_repository = new CartRepositoryJson();
+    this.cart_repository = new CartRepositoryDynamoDB();
     this.cart_service = new CartService(this.cart_repository);
     this.cart_controller = new CartController(this.cart_service);
     this.app.use("/api/v1/cart", this.cart_controller.router);

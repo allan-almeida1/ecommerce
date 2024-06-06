@@ -27,6 +27,7 @@ services:
       - AWS_ACCESS_KEY_ID=fakeMyKeyId
       - AWS_SECRET_ACCESS_KEY=fakeSecretAccessKey
       - AWS_DEFAULT_REGION=us-east-1
+    command: "init"
 
   shopping:
     build:
@@ -34,6 +35,11 @@ services:
       dockerfile: ./shopping/Dockerfile
     ports:
       - "3001:3001"
+    environment:
+      - AWS_REGION=us-east-1
+      - AWS_ENDPOINT=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=fakeMyKeyId
+      - AWS_SECRET_ACCESS_KEY=fakeSecretAccessKey
     networks:
       - internal_network
     depends_on:
